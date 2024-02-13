@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Bootstrap 4 Blog Template For Developers</title>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blog Template">
+    <meta name="author" content="Xiaoying Riley at 3rd Wave Media">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <!-- FontAwesome JS-->
+    <script defer src="https://use.fontawesome.com/releases/v5.7.1/js/all.js"
+        integrity="sha384-eVEQC9zshBn0rFj4+TU78eNA19HMNigMviK/PU/FFjLXqa/GKPgX58rvt5Z8PLs7"
+        crossorigin="anonymous"></script>
+
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/theme-1.css">
+
+</head>
+
+<body>
+
+    <!-- Include the header -->
+    <div id="header-placeholder"></div>
+
+    <div class="main-wrapper">
+
+        <section class="blog-list px-3 pt-3 pb-5 p-md-5">
+
+            <!-- Container for blog posts -->
+            <div id="blogPostsContainer" class="row"></div>
+
+        </section>
+
+        <section class="blog-list px-3 py-5 p-md-5">
+            <div class="container">
+
+                <!-- Login Modal -->
+                <div class="modal" id="loginModal" tabindex="-1" role="dialog" data-backdrop="static">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Login</h5>
+
+                            </div>
+                            <div class="modal-body">
+                                <form id="loginForm">
+                                    <div class="form-group">
+                                        <label for="username">Username:</label>
+                                        <input type="text" class="form-control" id="username" name="username" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password">Password:</label>
+                                        <input type="password" class="form-control" id="password" name="password"
+                                            required>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" onclick="submitLogin()">Login</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Delete Post Modal -->
+        <div class="modal" id="deletePostModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Confirm Deletion</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this blog post?</p>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="confirmDeleteButton" type="button" class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <!-- Modal for displaying full blog post content -->
+        <div class="modal" id="blogPostModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="blogPostModalTitle"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="blogPostModalContent"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div><!--//main-wrapper-->
+    <!-- Javascript -->
+    <script src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script src="assets/plugins/popper.min.js"></script>
+    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Style Switcher (REMOVE ON YOUR PRODUCTION SITE) -->
+    <script src="assets/js/demo/style-switcher.js"></script>
+
+    <script>
+        $(function () {
+            // Get the current page's filename
+            var currentPage = window.location.pathname.split("/").pop();
+
+            // Check if the current page is admin.html
+            if (currentPage === 'admin.html') {
+                $("#header-placeholder").load("admin-header.html");
+            } else {
+                $("#header-placeholder").load("header.html");
+            }
+        });
+    </script>
+
+
+    <script>
+
+        // Function to truncate HTML content to a specified number of characters
+        function truncateHtml(html, maxChars) {
+            let truncatedContent = html.replace(/<[^>]*>/g, ''); // Remove HTML tags
+            truncatedContent = truncatedContent.substring(0, maxChars).trim();
+            return truncatedContent;
+        }
+
+
+        // Function to fetch and display blog posts
+        function fetchAndDisplayBlogPosts() {
+            fetch('https://fr78iw0o09.execute-api.us-east-1.amazonaws.com/test/posts')
+                .then(response => response.json())
+                .then(data => {
+                    const blogPostsContainer = document.getElementById('blogPostsContainer');
+
+                    // Clear previous content
+                    blogPostsContainer.innerHTML = '';
+
+                    // Display each blog post
+                    data.forEach(post => {
+
+                        const shortContent = truncateHtml(post.content, 70);
+
+
+                        const postHTML = `
+						<div class="col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <img class="card-img-top" src="${post.imageUrl}" alt="Image">
+                                <div class="card-body">
+                                    <h4 class="card-title">${post.title}</h4>
+                                    <p class="card-text">${shortContent}</p>
+                                    <div class="meta mb-1">
+                                        <span class="date">${post.createdAt}</span>
+                                        <span class="time">5 min read</span>
+                                    </div>
+                                    <div class="buttons mt-3">
+                                        <button class="btn btn-primary btn-sm ml-2" onclick="editBlogPost('${post.postId}')">Edit</button>
+                                        <button class="btn btn-danger btn-sm ml-2" onclick="confirmDeleteBlogPost('${post.postId}')">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                        blogPostsContainer.innerHTML += postHTML;
+                    });
+                })
+                .catch(error => console.error('Error fetching blog posts:', error));
+        }
+
+        // Function to show blog post modal with full content
+        function showBlogPostModal(title, content) {
+            const modalTitle = document.getElementById('blogPostModalTitle');
+            const modalContent = document.getElementById('blogPostModalContent');
+
+            // Set modal title and content
+            modalTitle.innerText = title;
+            modalContent.innerText = content;
+
+            // Show the modal
+            $('#blogPostModal').modal('show');
+        }
+
+
+        // Function to confirm and delete a blog post
+        function confirmDeleteBlogPost(postId) {
+            $('#deletePostModal').modal('show');
+
+            // Set up event listener for the delete confirmation button
+            document.getElementById('confirmDeleteButton').addEventListener('click', function () {
+                deleteBlogPost(postId);
+                $('#deletePostModal').modal('hide');
+            });
+        }
+
+        // Function to confirm and Edit a blog post
+        function editBlogPost(postId) {
+
+
+            window.location.href = `edit-post.html?id=${postId}`;
+
+        }
+
+        // Function to delete a blog post
+        function deleteBlogPost(postId) {
+            fetch(`https://fr78iw0o09.execute-api.us-east-1.amazonaws.com/test/posts?postId=${postId}`, {
+                method: 'DELETE',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Blog post deleted successfully:', data);
+                    // Fetch and display updated blog posts
+                    fetchAndDisplayBlogPosts();
+                })
+                .catch(error => console.error('Error deleting blog post:', error));
+        };
+
+        // Load blog posts on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            //fetchAndDisplayBlogPosts();
+        });
+
+
+        // Function to submit login form
+        function submitLogin() {
+            var username = $('#username').val();
+            var password = $('#password').val();
+
+            // Call your authentication API with data in the query string
+            $.ajax({
+                url: 'https://fr78iw0o09.execute-api.us-east-1.amazonaws.com/test/login?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password),
+                method: 'POST',
+                success: function (data) {
+                    if (data.isAuthenticated) {
+                        // User is authenticated, close login modal and fetch blog posts
+                        setCookie('sessionToken', data.sessionToken, 1); // 1 day expiration
+                        $('#loginModal').modal('hide');
+                        fetchAndDisplayBlogPosts();
+                    } else {
+                        // Authentication failed, display an error message or handle it as needed
+                        alert('Login failed. Please check your credentials.');
+                    }
+                },
+                error: function () {
+                    // Handle error if the API call fails
+                    alert('Error during login. Please try again.');
+                }
+            });
+        }
+
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+            var expires = '';
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = '; expires=' + date.toUTCString();
+            }
+            document.cookie = name + '=' + value + expires + '; path=/';
+        }
+
+        // Function to get the value of a cookie by name
+        function getCookie(name) {
+            var nameEQ = name + '=';
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i];
+                while (cookie.charAt(0) === ' ') {
+                    cookie = cookie.substring(1, cookie.length);
+                }
+                if (cookie.indexOf(nameEQ) === 0) {
+                    return cookie.substring(nameEQ.length, cookie.length);
+                }
+            }
+            return null;
+        }
+
+        // Function to check user's session on page load
+        function checkSession() {
+            // Retrieve session token from the cookie
+            var sessionToken = getCookie('sessionToken');
+
+            if (sessionToken) {
+                // User is logged in, fetch blog posts
+                fetchAndDisplayBlogPosts();
+            } else {
+                // User is not logged in, show the login modal
+                $('#loginModal').modal('show');
+            }
+        }
+
+        // Load blog posts on page load
+        $(document).ready(function () {
+            // Check user's session and show login modal if not logged in
+            checkSession();
+        });
+
+
+    </script>
+
+
+</body>
+
+</html>

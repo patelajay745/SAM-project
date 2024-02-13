@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Serverless Blog</title>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blog Template">
+    <meta name="author" content="Xiaoying Riley at 3rd Wave Media">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <!-- FontAwesome JS-->
+    <script defer src="https://use.fontawesome.com/releases/v5.7.1/js/all.js"
+        integrity="sha384-eVEQC9zshBn0rFj4+TU78eNA19HMNigMviK/PU/FFjLXqa/GKPgX58rvt5Z8PLs7"
+        crossorigin="anonymous"></script>
+
+    <!-- Plugin CSS -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/styles/monokai-sublime.min.css">
+
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/theme-1.css">
+
+
+</head>
+
+<body>
+
+    <!-- Include the header -->
+    <div id="header-placeholder"></div>
+
+    <div class="main-wrapper">
+
+        <article class="blog-post px-3 py-5 p-md-5">
+            <div class="container-fluid">
+
+                <div id="errorAlert" class="alert alert-danger alert-dismissible fade show mt-3 mx-3" role="alert"
+                    style="display: none;">
+
+                </div>
+
+                <header class="blog-post-header">
+                    <h2 id="post-title" class="title mb-2"></h2>
+                    <div class="meta mb-3">
+                        <span class="date">Published <span id="post-date"></span></span>
+                        <span class="time"><span id="post-read-time"></span></span>
+                        <span class="comment"><a href="#">4 comments</a></span>
+                    </div>
+                </header>
+
+                <div class="blog-post-body">
+                    <!-- Inside the blog-post-body -->
+                    <figure class="blog-banner">
+                        <img id="post-image" class="img-fluid" alt="image">
+                    </figure>
+                    <div id="post-content" class="blog-post-body"></div>
+
+                    </pre>
+                </div>
+                <div class="blog-comments-section">
+                    <div id="disqus_thread"></div>
+                    <script>
+
+
+                        (function () {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+                            var d = document, s = d.createElement('script');
+
+                            // IMPORTANT: Replace 3wmthemes with your forum shortname!
+                            s.src = 'https://3wmthemes.disqus.com/embed.js';
+
+                            s.setAttribute('data-timestamp', +new Date());
+                            (d.head || d.body).appendChild(s);
+                        })();
+                    </script>
+                    <noscript>
+                        Please enable JavaScript to view the
+                        <a href="https://disqus.com/?ref_noscript" rel="nofollow">
+                            comments powered by Disqus.
+                        </a>
+                    </noscript>
+                </div><!--//blog-comments-section-->
+
+            </div><!--//container-->
+        </article>
+
+    </div><!--//main-wrapper-->
+
+
+    <!-- Javascript -->
+    <script src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script src="assets/plugins/popper.min.js"></script>
+    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Page Specific JS -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/highlight.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="assets/js/blog.js"></script>
+
+    <!-- Style Switcher (REMOVE ON YOUR PRODUCTION SITE) -->
+    <script src="assets/js/demo/style-switcher.js"></script>
+
+    <script>
+        $(function () {
+            $("#header-placeholder").load("header.html");
+        });
+    </script>
+
+    <script>
+
+
+        // Load the blog post on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchAndDisplayBlogPost();
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+
+        // Check if postId is null or undefined
+        if (!postId) {
+            // Redirect to index.html if no postId in the URL
+            window.location.href = 'index.html';
+        }
+
+        // Function to display an error message
+        function showErrorMessage(message) {
+            const errorAlert = document.getElementById('errorAlert');
+            errorAlert.innerText = message;
+            errorAlert.style.display = 'block';
+        }
+
+
+        // Function to fetch and display the selected blog post
+        function fetchAndDisplayBlogPost() {
+            // Get the post ID from the query parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
+
+            // Fetch the blog post with the given post ID
+            fetch(`https://fr78iw0o09.execute-api.us-east-1.amazonaws.com/test/post-details?postId=${postId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (Object.keys(data).length === 0) {
+                        // If the response is an empty object, show a custom error message
+                        showErrorMessage('No data found for the specified post ID');
+                        // Redirect to index.html after a delay (you can adjust the delay time)
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 3000); // 3000 milliseconds (3 seconds)
+                    } else {
+                        // Update HTML elements with fetched data
+                        $('#post-title').text(data.title);
+                        $('#post-date').text(data.createdAt); // You may need to format the date
+                        $('#post-read-time').text('5 min read'); // Adjust based on your data
+                        $('#post-content').html(data.content);
+
+                        // Update the image source
+                        $('#post-image').attr('src', data.imageUrl);
+                    }
+                })
+                .catch(error => {
+
+                    console.error('Error while retrieving data:', error);
+
+                    // Display error message using Bootstrap alert
+                    showErrorMessage('Error while retrieving data');
+
+                    // Redirect to index.html after a delay (you can adjust the delay time)
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 3000); // 3000 milliseconds (3 seconds)
+                });
+        }
+
+
+
+    </script>
+
+
+</body>
+
+</html>

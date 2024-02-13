@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Serverless Blog</title>
+
+	<!-- Meta -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Blog Template">
+	<meta name="author" content="Xiaoying Riley at 3rd Wave Media">
+	<link rel="shortcut icon" href="favicon.ico">
+
+	<!-- FontAwesome JS-->
+	<script defer src="https://use.fontawesome.com/releases/v5.7.1/js/all.js"
+		integrity="sha384-eVEQC9zshBn0rFj4+TU78eNA19HMNigMviK/PU/FFjLXqa/GKPgX58rvt5Z8PLs7"
+		crossorigin="anonymous"></script>
+
+	<!-- Theme CSS -->
+	<link id="theme-style" rel="stylesheet" href="assets/css/theme-1.css">
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+	<!-- Include the header -->
+	<div id="header-placeholder"></div>
+
+
+	<div class="main-wrapper">
+		<section class="cta-section theme-bg-light py-5">
+			<div class="container text-center">
+				<h2 class="heading">Serverless Blog</h2>
+				<div class="intro">Welcome to my blog. Subscribe and get my latest blog post in your inbox.</div>
+				<form class="signup-form form-inline justify-content-center pt-3">
+					<div class="form-group">
+						<label class="sr-only" for="semail">Your email</label>
+						<input type="email" id="semail" name="semail1" class="form-control mr-md-1 semail"
+							placeholder="Enter email">
+					</div>
+					<button type="submit" class="btn btn-primary">Subscribe</button>
+				</form>
+			</div><!--//container-->
+		</section>
+
+
+
+
+		<section class="blog-list px-3 py-5 p-md-5">
+
+			<!-- Container for blog posts -->
+			<div id="blogPostsContainer" class="row"></div>
+
+		</section>
+
+
+		<!-- Modal for displaying full blog post content -->
+		<div class="modal" id="blogPostModal" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="blogPostModalTitle"></h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body" id="blogPostModalContent"></div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	</div><!--//main-wrapper-->
+
+	<!-- Javascript -->
+	<script src="assets/plugins/jquery-3.3.1.min.js"></script>
+	<script src="assets/plugins/popper.min.js"></script>
+	<script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+	<!-- Style Switcher (REMOVE ON YOUR PRODUCTION SITE) -->
+	<script src="assets/js/demo/style-switcher.js"></script>
+
+
+	<script>
+		$(function () {
+			// Get the current page's filename
+			var currentPage = window.location.pathname.split("/").pop();
+
+			// Check if the current page is admin.html
+			if (currentPage === 'admin.html') {
+				$("#header-placeholder").load("admin-header.html");
+			} else {
+				$("#header-placeholder").load("header.html");
+			}
+		});
+	</script>
+	<!-- Timeago.js -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/timeago.js/4.0.2/timeago.min.js"></script>
+
+	<script>
+
+		// Function to truncate HTML content to a specified number of characters
+		function truncateHtml(html, maxChars) {
+			let truncatedContent = html.replace(/<[^>]*>/g, ''); // Remove HTML tags
+			truncatedContent = truncatedContent.substring(0, maxChars).trim();
+			return truncatedContent;
+		}
+
+		function formatDateTime(isoDate) {
+			const date = new Date(isoDate);
+			const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+			return date.toLocaleDateString('en-US', options);
+		}
+
+
+
+
+		// Function to fetch and display blog posts
+		function fetchAndDisplayBlogPosts() {
+			fetch('https://fr78iw0o09.execute-api.us-east-1.amazonaws.com/test/posts')
+				.then(response => response.json())
+				.then(data => {
+					const blogPostsContainer = document.getElementById('blogPostsContainer');
+
+					// Clear previous content
+					blogPostsContainer.innerHTML = '';
+
+					// Display each blog post
+					data.forEach(post => {
+
+						const shortContent = truncateHtml(post.content, 70);
+
+						console.log(shortContent)
+
+						const postHTML = `
+						<div class="col-lg-4 mb-4">
+                                <div class="card h-100">
+                                    <img class="card-img-top" src="${post.imageUrl}" alt="Image">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><a href="show-post.html?id=${post.postId}">${post.title}</a></h4>
+                                        <p class="card-text">${shortContent}</p>
+                                        <div class="meta mb-1">
+                                            <span class="date">${formatDateTime(post.createdAt)}</span>
+                                            <span class="time">5 min read</span>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>`;
+						blogPostsContainer.innerHTML += postHTML;
+					});
+				})
+				.catch(error => console.error('Error fetching blog posts:', error));
+		}
+
+		// Function to show blog post modal with full content
+		function showBlogPostModal(title, content) {
+			const modalTitle = document.getElementById('blogPostModalTitle');
+			const modalContent = document.getElementById('blogPostModalContent');
+
+			// Set modal title and content
+			modalTitle.innerText = title;
+			modalContent.innerText = content;
+
+			// Show the modal
+			$('#blogPostModal').modal('show');
+		}
+
+		// Load blog posts on page load
+		document.addEventListener('DOMContentLoaded', function () {
+			fetchAndDisplayBlogPosts();
+		});
+	</script>
+
+
+</body>
+
+</html>
