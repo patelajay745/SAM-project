@@ -151,7 +151,7 @@
 
         // Function to fetch and display blog posts
         function fetchAndDisplayBlogPosts() {
-            fetch('https://fr78iw0o09.execute-api.us-east-1.amazonaws.com/test/posts')
+            fetch('https://e9ygwt9dhg.execute-api.us-east-2.amazonaws.com/dev/ManageBlogPost')
                 .then(response => response.json())
                 .then(data => {
                     const blogPostsContainer = document.getElementById('blogPostsContainer');
@@ -224,7 +224,7 @@
 
         // Function to delete a blog post
         function deleteBlogPost(postId) {
-            fetch(`https://fr78iw0o09.execute-api.us-east-1.amazonaws.com/test/posts?postId=${postId}`, {
+            fetch(`https://e9ygwt9dhg.execute-api.us-east-2.amazonaws.com/dev/ManageBlogPost?postId=${postId}`, {
                 method: 'DELETE',
             })
                 .then(response => response.json())
@@ -249,7 +249,7 @@
 
             // Call your authentication API with data in the query string
             $.ajax({
-                url: 'https://fr78iw0o09.execute-api.us-east-1.amazonaws.com/test/login?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password),
+                url: 'https://e9ygwt9dhg.execute-api.us-east-2.amazonaws.com/dev/login?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password),
                 method: 'POST',
                 success: function (data) {
                     if (data.isAuthenticated) {

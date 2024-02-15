@@ -121,7 +121,7 @@
             const postId = urlParams.get('id');
 
             // Fetch the blog post with the given post ID
-            fetch(`https://fr78iw0o09.execute-api.us-east-1.amazonaws.com/test/post-details?postId=${postId}`)
+            fetch(`https://e9ygwt9dhg.execute-api.us-east-2.amazonaws.com/dev/ManageBlogPost?postId=${postId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (Object.keys(data).length === 0) {

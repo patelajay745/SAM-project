@@ -97,7 +97,7 @@ def lambda_handler(event, context):
                     s3.delete_object(Bucket=s3_name, Key=key)
                 
                 s3_upload = s3.put_object(Bucket=s3_name, Key=timestamp, Body=decode_content)
-                image_url = f"https://{s3_name}.s3.amazonaws.com/{timestamp}"
+                image_url = f"https://{s3_name}.s3.amazonaws.com/images/{timestamp}"
                 
                 # Update the post with the new image URL
                 table.update_item(
