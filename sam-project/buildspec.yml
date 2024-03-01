@@ -8,3 +8,6 @@ phases:
       - cd sam-project
       - sam build
       - sam deploy --region us-west-1 --stack-name serverlessApp  --resolve-s3 --no-confirm-changeset --no-fail-on-empty-changeset
+artifacts:
+  files: website/**
+  name: MyWebsiteArtifacts
