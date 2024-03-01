@@ -1,0 +1,217 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: ''
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+    LoggingConfig:
+      LogFormat: JSON
+Resources:
+  ManageBlogPostFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ManageBlogPostFunction
+      Handler: ManageBlogPostFunction.lambda_handler
+      Runtime: python3.8
+      Architectures:
+      - x86_64
+      Environment:
+        Variables:
+          BLOG_TABLE:
+            Ref: BlogPostsTable
+          S3_NAME: myserverlessblog.ajayproject.com
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: BlogPostsTable
+      - S3FullAccessPolicy:
+          BucketName:
+            Ref: ServerlessBlogS3Bucket
+    Metadata:
+      SamResourceId: ManageBlogPostFunction
+  LoginFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: LoginFunction
+      Handler: login.lambda_handler
+      Runtime: python3.8
+      Architectures:
+      - x86_64
+      Environment:
+        Variables:
+          LOGIN_TABLE:
+            Ref: LoginTable
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: LoginTable
+    Metadata:
+      SamResourceId: LoginFunction
+  BlogPostsTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: postId
+        Type: String
+  LoginTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: username
+        Type: String
+  DynamoDBCrudPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: DynamoDBCrudPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          - dynamodb:UpdateItem
+          - dynamodb:DeleteItem
+          - dynamodb:Scan
+          - dynamodb:Query
+          Resource:
+            Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${LoginTable}
+        - Effect: Allow
+          Action:
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          - dynamodb:UpdateItem
+          - dynamodb:DeleteItem
+          - dynamodb:Scan
+          - dynamodb:Query
+          Resource:
+            Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${BlogPostsTable}
+      Roles:
+      - Ref: ManageBlogPostFunctionRole
+      - Ref: LoginFunctionRole
+  ServerlessBlogS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: myserverlessblog.ajayproject.com
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: index.html
+  ServerlessBlogS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: ServerlessBlogS3Bucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Id: Policy1707666026999
+        Statement:
+        - Sid: Stmt1707666025128
+          Effect: Allow
+          Principal: '*'
+          Action: s3:GetObject
+          Resource:
+            Fn::Sub: arn:aws:s3:::${ServerlessBlogS3Bucket}/*
+  ServerlessBlogAPIGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: v1
+      OpenApiVersion: '2.0'
+      DefinitionBody:
+        swagger: '2.0'
+        info:
+          title: ServerlessBlogAPIGateway
+          version: '1.0'
+        paths:
+          /login:
+            post:
+              responses:
+                '200':
+                  description: Successful response
+                  schema:
+                    $ref: '#/definitions/Empty'
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LoginFunction.Arn}/invocations
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: POST
+                type: aws_proxy
+          /ManageBlogPost:
+            get:
+              responses:
+                '200':
+                  description: Successful response
+                  schema:
+                    $ref: '#/definitions/Empty'
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ManageBlogPostFunction.Arn}/invocations
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: GET
+                type: aws_proxy
+            post:
+              responses:
+                '200':
+                  description: Successful response
+                  schema:
+                    $ref: '#/definitions/Empty'
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ManageBlogPostFunction.Arn}/invocations
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: POST
+                type: aws_proxy
+            delete:
+              responses:
+                '200':
+                  description: Successful response
+                  schema:
+                    $ref: '#/definitions/Empty'
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ManageBlogPostFunction.Arn}/invocations
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: DELETE
+                type: aws_proxy
+            put:
+              responses:
+                '200':
+                  description: Successful response
+                  schema:
+                    $ref: '#/definitions/Empty'
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ManageBlogPostFunction.Arn}/invocations
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: PUT
+                type: aws_proxy
+      Cors:
+        AllowMethods: '''POST,OPTIONS,GET'''
+        AllowHeaders: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+        AllowOrigin: '''*'''
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+Outputs:
+  LoginApiUrl:
+    Description: URL for the Login API
+    Value:
+      Fn::Sub: https://${ServerlessBlogAPIGateway}.execute-api.${AWS::Region}.amazonaws.com/v1/
