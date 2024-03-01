@@ -8,6 +8,12 @@ phases:
       - cd sam-project
       - sam build
       - sam deploy --region us-west-1 --stack-name serverlessApp  --resolve-s3 --no-confirm-changeset --no-fail-on-empty-changeset
-artifacts:
-  files: website/**
-  name: MyWebsiteArtifacts
+  post_build:
+    commands:
+      - cd ..
+      - |
+        if git diff --quiet HEAD~1; then
+          echo "No changes in website/ folder. Skipping S3 sync."
+        else
+          aws s3 sync website/ s3://myserverlesblog.ajayproject.com
+        fi
