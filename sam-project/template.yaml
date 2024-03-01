@@ -94,7 +94,7 @@ Resources:
   ServerlessBlogS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: myserverlessblog.ajayproject.com
+      BucketName: myserverlesblog.ajayproject.com
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
         BlockPublicPolicy: false
