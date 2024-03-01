@@ -1,6 +1,10 @@
 import json
 import boto3
 
+import os
+
+table_name = os.environ['LOGIN_TABLE']
+
 def lambda_handler(event, context):
     # Extract username and password from the query parameters
     
@@ -25,7 +29,7 @@ def lambda_handler(event, context):
 def check_credentials(username, password):
     # Connect to DynamoDB
     dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('login')  # Replace 'login' with your actual table name
+    table = dynamodb.Table(table_name)  # Replace 'login' with your actual table name
 
     # Scan DynamoDB table for the provided username and password
     response = table.scan(

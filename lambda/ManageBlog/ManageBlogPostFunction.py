@@ -5,10 +5,16 @@ import base64
 from datetime import datetime
 from boto3.dynamodb.conditions import Key
 
+import os
+
+
+
 dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('BlogPosts')
+table_name = os.environ['BLOG_TABLE']
+table = dynamodb.Table(table_name)
+
 s3 = boto3.client('s3')
-s3_name = 'myblog-serverless'
+s3_name = 'myserverlessblog.ajayproject.com'
 
 def lambda_handler(event, context):
     
@@ -16,26 +22,39 @@ def lambda_handler(event, context):
     http_method = event['httpMethod']
     
     request_origin = event['headers'].get('origin', '')
-    allowed_origin = 'http://serverless.ajayproject.com'
+    allowed_origin = ''
     
     print(f"request_origin: {request_origin}")
     
     if request_origin == allowed_origin:
 
         if http_method == 'GET':
-            # Retrieve all blog posts
-            
-            response = table.scan()
-            items = response.get('Items', [])
-            
-            # Sort the items by createdAt in descending order
-            sorted_items = sorted(items, key=lambda x: x['createdAt'], reverse=True)
-    
-            return {
-                'statusCode': 200,
-                'headers': generate_cors_headers(),
-                'body': json.dumps(sorted_items)
-            }
+
+                # Retrieve a specific blog post based on postId
+            post_id = None
+            if 'queryStringParameters' in event and event['queryStringParameters'] is not None:
+                post_id = event['queryStringParameters'].get('postId')
+            if post_id:
+                response = table.get_item(Key={'postId': post_id})
+                item = response.get('Item', {})
+                return {
+                    'statusCode': 200,
+                    'headers': generate_cors_headers(),
+                    'body': json.dumps(item)
+                }
+            else:
+                # Retrieve all blog posts
+                response = table.scan()
+                items = response.get('Items', [])
+                
+                # Sort the items by createdAt in descending order
+                sorted_items = sorted(items, key=lambda x: x.get('createdAt', ''), reverse=True)
+        
+                return {
+                    'statusCode': 200,
+                    'headers': generate_cors_headers(),
+                    'body': json.dumps(sorted_items)
+                }
             
         elif http_method == 'POST':
             # Create a new blog post with date and time
@@ -167,7 +186,7 @@ def lambda_handler(event, context):
 def generate_cors_headers():
     return {
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Origin': 'http://serverless.ajayproject.com',
-        # 'Access-Control-Allow-Origin': '*',
+        # 'Access-Control-Allow-Origin': 'http://serverless.ajayproject.com',
+        'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT,DELETE'
     }
