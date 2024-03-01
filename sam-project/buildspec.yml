@@ -11,9 +11,15 @@ phases:
   post_build:
     commands:
       - cd ..
+      - current_commit=$(git rev-parse HEAD)
+      - previous_commit=$(git rev-parse HEAD^1)
+      - changed_files=$(git diff --name-only $previous_commit...$current_commit | grep 'website/')
       - |
-        if git diff --quiet HEAD~1; then
-          echo "No changes in website/ folder. Skipping S3 sync."
-        else
+        if [ -n "$changed_files" ]; then
+          echo "Changes detected in 'website/' folder:"
+          echo "$changed_files"
           aws s3 sync website/ s3://myserverlesblog.ajayproject.com
+          # Perform additional actions or commands here, e.g., sync to S3.
+        else
+          echo "No changes in website/ folder. Skipping S3 sync."
         fi
