@@ -12,7 +12,9 @@ phases:
     commands:
       - cd ..
       - current_commit=$(git rev-parse HEAD)
+      - echo "$current_commit"
       - previous_commit=$(git rev-parse HEAD^1)
+      - echo "$previous_commit"
       - changed_files=$(git diff --name-only $previous_commit...$current_commit | grep 'website/')
 
       #aws s3 sync website/ s3://myserverlesblog.ajayproject.com
