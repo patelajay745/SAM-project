@@ -2,5 +2,5 @@ version: 0.2
 phases:
   build:
     commands:
-      - sam build -t sam-project/template.yml
+      - sam build -t sam-project/template.yaml
       - sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --region us-west-1
