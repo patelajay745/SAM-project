@@ -5,6 +5,5 @@ phases:
       python: 3.8
   build:
     commands:
-      - cd sam-project
-      - sam build
-      - sam deploy --region us-west-1 --stack-name serverlessApp  --resolve-s3 --no-confirm-changeset
+      - sam build -t sam-project/template.yaml
+      - sam deploy --region us-west-1 --stack-name serverlessApp  --resolve-s3 --no-confirm-changeset --no-fail-on-empty-changeset
