@@ -13,7 +13,7 @@ phases:
       - cd ..
       - current_commit=$(git rev-parse HEAD)
       - echo "$current_commit"
-      - previous_commit=$(git rev-parse HEAD-1)
+      - previous_commit=$(git rev-parse HEAD~1)
       - echo "$current_commit"
       - changed_files=$(git diff --name-only $previous_commit...$current_commit | grep 'website/')
 
