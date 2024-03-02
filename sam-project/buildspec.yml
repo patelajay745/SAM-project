@@ -15,7 +15,15 @@ phases:
       - echo "$latest_commit_id"
       - previous_commit_id=$(aws codecommit get-commit --repository-name ServerlessApp --commit-id $latest_commit_id --region us-west-1 --query 'commit.parents[0]' --output text)
       - echo "$previous_commit_id"
-      - changed_files=$(git diff --name-only $previous_commit...$latest_commit_id | grep 'website/')
+      - folder_to_check="website/"
+
+      - changed_files=$(aws codecommit get-differences \
+        --repository-name ServerlessApp \
+        --after-commit-spec $latest_commit \
+        --before-commit-spec $previous_commit_id \
+        --region us-west-1 \
+        --query differences[].after.blob.path \
+        --output text | grep "$folder_to_check")
 
       #aws s3 sync website/ s3://myserverlesblog.ajayproject.com
       - |
