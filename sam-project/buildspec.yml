@@ -10,21 +10,4 @@ phases:
       - sam deploy --region us-west-1 --stack-name serverlessApp  --resolve-s3 --no-confirm-changeset --no-fail-on-empty-changeset
   post_build:
     commands:
-      - cd ..
-      - current_commit=$(git rev-parse HEAD)
-      - echo "$current_commit"
-      - previous_commit=$(git rev-parse HEAD~1)
-      - echo "$current_commit"
-      - changed_files=$(git diff --name-only $previous_commit...$current_commit | grep 'website/')
-
-      #aws s3 sync website/ s3://myserverlesblog.ajayproject.com
-      - |
-
-        if [ -n "$changed_files" ]; then
-          echo "Changes detected in 'website/' folder:"
-          echo "$changed_files"
-          # Perform additional actions or commands here, e.g., sync to S3.
-          aws s3 sync website/ s3://myserverlesblog.ajayproject.com
-        else
-          echo "No changes in 'website/' folder.";
-        fi
+      - aws s3 sync website/ s3://myserverlesblog.ajayproject.com
