@@ -11,13 +11,11 @@ phases:
   post_build:
     commands:
       - cd ..
-      - latest_commit=$(aws codecommit get-branch --repository-name ServerlessApp --branch-name main --region us-west-1 --query 'branch.commitId' --output text)
-      - echo "$latest_commit"
-      - previous_commit=$(aws codecommit get-commit --repository-name ServerlessApp --commit-id $latest_commit --region us-west-1 --query 'commit.parents[0]' --output text)
-      - echo "$previous_commit"
-      - folder_to_check="website/"
-
-      - changed_files=$(aws codecommit get-differences --repository-name ServerlessApp --after-commit-spec $latest_commit --before-commit-spec $previous_commit --region us-west-1 --query differences[].after.blob.path --output text | grep "$folder_to_check")
+      - current_commit=$(git rev-parse HEAD)
+      - echo "$current_commit"
+      - previous_commit=$(git rev-parse HEAD-1)
+      - echo "$current_commit"
+      - changed_files=$(git diff --name-only $previous_commit...$current_commit | grep 'website/')
 
       #aws s3 sync website/ s3://myserverlesblog.ajayproject.com
       - |
