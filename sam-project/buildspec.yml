@@ -11,10 +11,10 @@ phases:
   post_build:
     commands:
       - cd ..
-      - current_commit=$(git rev-parse HEAD)
-      - echo "$current_commit"
-      - previous_commit=$(git rev-parse HEAD\^1)
-      - echo "$current_commit"
+      - latest_commit_id=$(aws codecommit get-branch --repository-name ServerlessApp --branch-name main --region us-west-1 --query 'branch.commitId' --output text)
+      - echo "$latest_commit_id"
+      - previous_commit_id=$(aws codecommit get-commit --repository-name ServerlessApp --commit-id $latest_commit_id --region us-west-1 --query 'commit.parents[0]' --output text)
+      - echo "$previous_commit_id"
       - changed_files=$(git diff --name-only $previous_commit...$current_commit | grep 'website/')
 
       #aws s3 sync website/ s3://myserverlesblog.ajayproject.com
