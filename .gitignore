@@ -1,0 +1,9 @@
+# Ignore AWS SAM build artifacts
+.aws-sam/
+
+# Ignore Visual Studio Code settings
+.vscode/
+
+# Ignore macOS DS_Store files
+.DS_Store
+
