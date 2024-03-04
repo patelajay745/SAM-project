@@ -22,7 +22,7 @@ Resources:
       Environment:
         Variables:
           BLOG_TABLE: !Ref BlogPostsTable
-          S3_NAME: myserverlessblog.ajayproject.com
+          S3_NAME: myserverlesblog01.ajayproject.com
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref BlogPostsTable
@@ -94,7 +94,7 @@ Resources:
   ServerlessBlogS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: myserverlesblog.ajayproject.com
+      BucketName: myserverlesblog01.ajayproject.com
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
         BlockPublicPolicy: false
