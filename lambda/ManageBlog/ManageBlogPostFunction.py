@@ -70,7 +70,7 @@ def lambda_handler(event, context):
             
             s3_upload = s3.put_object(Bucket=s3_name, Key=timestamp, Body=decode_content)
             
-            image_url = f"https://{s3_name}.s3.amazonaws.com/{timestamp}"  # Update with your S3 bucket URL
+            image_url = f"http://{s3_name}.s3.amazonaws.com/{timestamp}"  # Update with your S3 bucket URL
             
             table.put_item(
                 Item={
@@ -116,7 +116,7 @@ def lambda_handler(event, context):
                     s3.delete_object(Bucket=s3_name, Key=key)
                 
                 s3_upload = s3.put_object(Bucket=s3_name, Key=timestamp, Body=decode_content)
-                image_url = f"https://{s3_name}.s3.amazonaws.com/images/{timestamp}"
+                image_url = f"http://{s3_name}.s3.amazonaws.com/images/{timestamp}"
                 
                 # Update the post with the new image URL
                 table.update_item(
@@ -186,7 +186,7 @@ def lambda_handler(event, context):
 def generate_cors_headers():
     return {
         'Access-Control-Allow-Headers': 'Content-Type',
-        # 'Access-Control-Allow-Origin': 'http://serverless.ajayproject.com',
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': 'http://myserverlesblog01.ajayproject.com',
+        # 'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT,DELETE'
     }
