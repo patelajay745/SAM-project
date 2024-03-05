@@ -22,7 +22,7 @@ def lambda_handler(event, context):
     http_method = event['httpMethod']
     
     request_origin = event['headers'].get('origin', '')
-    allowed_origin = ''
+    allowed_origin = 'http://myserverlesblog01.ajayproject.com'
     
     print(f"request_origin: {request_origin}")
     
