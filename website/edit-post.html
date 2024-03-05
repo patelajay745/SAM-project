@@ -121,7 +121,7 @@
             const postId = urlParams.get('id');
 
             // Fetch the blog post with the given post ID
-            fetch(`https://e9ygwt9dhg.execute-api.us-east-2.amazonaws.com/dev/ManageBlogPost?postId=${postId}`)
+            fetch(`https://wmd3leyyc0.execute-api.us-west-2.amazonaws.com/v1/ManageBlogPost?postId=${postId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (Object.keys(data).length === 0) {
@@ -193,7 +193,7 @@
                     console.log('New File Extension:', newExtension);
 
                     // Send the data to the Lambda function
-                    fetch(`https://fr78iw0o09.execute-api.us-east-1.amazonaws.com/test/posts?postId=${postId}`, {
+                    fetch(`https://wmd3leyyc0.execute-api.us-west-2.amazonaws.com/v1/ManageBlogPost?postId=${postId}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -222,7 +222,7 @@
 
 
                 // No new image, update the post without changing the image
-                fetch(`https://fr78iw0o09.execute-api.us-east-1.amazonaws.com/test/posts?postId=${postId}`, {
+                fetch(`https://wmd3leyyc0.execute-api.us-west-2.amazonaws.com/v1/ManageBlogPost?postId=${postId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

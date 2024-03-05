@@ -124,7 +124,7 @@
 
 		// Function to fetch and display blog posts
 		function fetchAndDisplayBlogPosts() {
-			fetch('https://e9ygwt9dhg.execute-api.us-east-2.amazonaws.com/dev/ManageBlogPost')
+			fetch('https://wmd3leyyc0.execute-api.us-west-2.amazonaws.com/v1/ManageBlogPost')
 				.then(response => response.json())
 				.then(data => {
 					const blogPostsContainer = document.getElementById('blogPostsContainer');
