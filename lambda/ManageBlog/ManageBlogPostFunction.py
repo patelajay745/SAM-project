@@ -14,7 +14,7 @@ table_name = os.environ['BLOG_TABLE']
 table = dynamodb.Table(table_name)
 
 s3 = boto3.client('s3')
-s3_name = 'myserverlessblog.ajayproject.com'
+s3_name = 'myserverlesblog01.ajayproject.com'
 
 def lambda_handler(event, context):
     
