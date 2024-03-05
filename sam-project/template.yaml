@@ -204,7 +204,7 @@ Resources:
                 httpMethod: "PUT"
                 type: aws_proxy
       Cors:
-        AllowMethods: "'POST,OPTIONS,GET'"
+        AllowMethods: "'POST,OPTIONS,GET,DELETE'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
         AllowOrigin: "'*'"
 

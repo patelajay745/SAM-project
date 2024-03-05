@@ -22,7 +22,7 @@ def lambda_handler(event, context):
     http_method = event['httpMethod']
     
     request_origin = event['headers'].get('origin', '')
-    allowed_origin = 'http://myserverlesblog01.ajayproject.com'
+    allowed_origin = ''
     
     print(f"request_origin: {request_origin}")
     
@@ -186,7 +186,7 @@ def lambda_handler(event, context):
 def generate_cors_headers():
     return {
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Origin': 'http://myserverlesblog01.ajayproject.com',
-        # 'Access-Control-Allow-Origin': '*',
+        # 'Access-Control-Allow-Origin': 'http://myserverlesblog01.ajayproject.com',
+        'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT,DELETE'
     }
