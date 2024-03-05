@@ -206,7 +206,7 @@ Resources:
       Cors:
         AllowMethods: "'POST,OPTIONS,GET,DELETE'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-        AllowOrigin: "'*'"
+        AllowOrigin: "'http://myserverlesblog01.ajayproject.com'"
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
