@@ -22,11 +22,11 @@ def lambda_handler(event, context):
     http_method = event['httpMethod']
     
     request_origin = event['headers'].get('origin', '')
-    allowed_origin = ''
+    allowed_origin = True
     
     print(f"request_origin: {request_origin}")
     
-    if request_origin == allowed_origin:
+    if allowed_origin:
 
         if http_method == 'GET':
 
